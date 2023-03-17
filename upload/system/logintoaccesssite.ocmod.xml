@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Login To Access Site</name>
+    <version>1.0</version>
+    <author>Toader Bogdan (FixWeb)</author>
+    <link>https://fixweb.ro</link>
+    <code>fwltas</code>
+    <file path="catalog/controller/common/header.php">
+        <operation>
+            <search><![CDATA[public function index() {]]></search>
+            <add position="before"><![CDATA[
+			private function loginToAccessSite()
+			{
+				$allowed_routes=['account/login','account/register','account/forgotten'];
+		
+				$route=isset($this->request->get['route']) ? $this->request->get['route'] : '';
+				
+				$this->load->language('account/login');
+				
+				$action = $this->url->link('account/login', '', true);
+				$register = $this->url->link('account/register', '', true);
+				$forgotten = $this->url->link('account/forgotten', '', true);
+		
+		
+				$customer_id=(int)$this->customer->getId();
+				
+				if($customer_id==0 && !in_array($route,$allowed_routes))
+				{
+					$library_path=DIR_SYSTEM."/library/logintoaccesssite.php";
+					$library_path=str_ireplace("//","/",DIR_SYSTEM."/library/logintoaccesssite.php");;
+					
+					include($library_path);
+					
+					//die();
+				}
+			}
+			]]></add>
+        </operation>
+		<operation>
+            <search><![CDATA[public function index() {]]></search>
+            <add position="after"><![CDATA[
+			$this->loginToAccessSite();
+			]]></add>
+        </operation>
+    </file>
+</modification>
